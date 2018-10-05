@@ -1,6 +1,20 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-void main() => runApp(new MyApp());
+import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+import 'package:scanner/camera.dart';
+import 'package:scanner/log.dart';
+
+Future<Null> main() async {
+  // Fetch the available cameras before initializing the app.
+  List<CameraDescription> cameras;
+  try {
+    cameras = await availableCameras();
+  } on CameraException catch (e) {
+    logError(e.code, e.description);
+  }
+  runApp(CameraApp(cameras:cameras));
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
