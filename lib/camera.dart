@@ -3,14 +3,15 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:scanner/image/imageservice.dart';
 import 'package:scanner/log.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart' as Img;
 
 class CameraWidget extends StatefulWidget {
-
   final List<CameraDescription> cameras;
 
-  CameraWidget({Key key, @required this.cameras}) : super(key:key);
+  CameraWidget({Key key, @required this.cameras}) : super(key: key);
 
   @override
   CameraWidgetState createState() {
@@ -103,12 +104,10 @@ class CameraWidgetState extends State<CameraWidget> {
   /// Display the thumbnail of the captured image or video.
   Widget _thumbnailWidget() {
     return Expanded(
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: imagePath == null ? null : Image.file(File(imagePath)
-              ),
-      )
-    );
+        child: Align(
+      alignment: Alignment.centerRight,
+      child: imagePath == null ? null : Image.file(File(imagePath)),
+    ));
   }
 
   /// Display the control bar with buttons to take pictures and record videos.
@@ -191,10 +190,23 @@ class CameraWidgetState extends State<CameraWidget> {
   void onTakePictureButtonPressed() {
     takePicture().then((String filePath) {
       if (mounted) {
-        setState(() {
+        /*setState(() {
           imagePath = filePath;
-        });
-        if (filePath != null) showInSnackBar('Picture saved to $filePath');
+        });*/
+        if (filePath != null) {
+          showInSnackBar('Picture saved to $filePath');
+
+          //Img.Image source = Img.decodeImage(new File(filePath).readAsBytesSync());
+          ImageService imageservice = new ImageService();
+          imageservice
+              .prepareImage(new File(filePath).readAsBytesSync())
+              .then((Img.Image result) {
+            new File(filePath).writeAsBytesSync(Img.encodeJpg(result));
+            setState(() {
+              imagePath = filePath;
+            });
+          });
+        }
       }
     });
   }
@@ -230,7 +242,6 @@ class CameraWidgetState extends State<CameraWidget> {
 }
 
 class CameraApp extends StatelessWidget {
-
   final List<CameraDescription> cameras;
 
   CameraApp({Key key, @required this.cameras}) : super(key: key);

@@ -145,7 +145,7 @@ public class Imgcodecs {
     }
 
     //javadoc: imencode(ext, img, buf)
-    public static boolean imencode(String ext, Mat img, MatOfByte buf)
+    public static boolean  imencode(String ext, Mat img, MatOfByte buf)
     {
         Mat buf_mat = buf;
         boolean retVal = imencode_1(ext, img.nativeObj, buf_mat.nativeObj);
